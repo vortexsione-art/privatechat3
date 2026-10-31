@@ -1,0 +1,97 @@
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Chat Rahasia</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{font-family:'Poppins',sans-serif;box-sizing:border-box}
+:root{--me:linear-gradient(135deg,#0ea5e9,#6366f1);--you:#1a1d29;--border:rgba(255,255,255,0.1)}
+html,body{margin:0;padding:0;width:100%;max-width:100%;overflow-x:hidden}
+body{
+  min-height:100dvh;
+  background:radial-gradient(800px at 20% 0%, #0ea5e9 0%, transparent 50%),radial-gradient(800px at 100% 100%, #6366f1 0%, transparent 50%),#06070d;
+  display:flex;justify-content:center;align-items:center;
+  color:#fff;
+  overflow-x:hidden; /* cuma kunci samping */
+  overscroll-behavior-x:none;
+}
+.card{width:100%;max-width:430px;height:100dvh;background:rgba(16,18,28,0.92);backdrop-filter:blur(30px);border:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+@media(min-width:500px){.card{height:92dvh;max-height:800px;border-radius:32px;margin:12px}}
+@media(max-width:499px){.card{border:none;border-radius:0;max-width:100vw}}
+#pageLogin{padding:28px 24px;text-align:center;margin:auto 0;overflow-x:hidden}
+#pageChat{display:none;flex-direction:column;flex:1;overflow:hidden;min-height:0}
+.header{padding:12px 14px;background:rgba(0,0,0,0.45);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;border-bottom:1px solid var(--border)}
+#chat{
+  flex:1;
+  overflow-y:auto; /* BOLEH ATAS BAWAH */
+  overflow-x:hidden; /* GA BOLEH SAMPING */
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:contain;
+  overscroll-behavior-x:none;
+  touch-action:pan-y;
+  padding:14px;display:flex;flex-direction:column;gap:10px;min-height:0;
+}
+.bubble{max-width:82%;padding:11px 14px;border-radius:20px;font-size:13.5px;word-break:break-word;overflow-wrap:anywhere;animation:popIn 0.35s cubic-bezier(0.175,0.885,0.32,1.275)}
+@keyframes popIn{0%{transform:scale(0.6) translateY(20px);opacity:0}100%{transform:scale(1) translateY(0);opacity:1}}
+.me{align-self:flex-end;background:var(--me);border-bottom-right-radius:6px}
+.you{align-self:flex-start;background:var(--you);border:1px solid var(--border);border-bottom-left-radius:6px}
+.footer{padding:12px 14px;background:rgba(0,0,0,0.55);display:flex;gap:10px;align-items:center;flex-shrink:0;border-top:1px solid var(--border);padding-bottom:max(12px, env(safe-area-inset-bottom))}
+.footer input{flex:1;min-width:0;background:rgba(255,255,255,0.07);border:1px solid var(--border);border-radius:24px;padding:12px 16px;color:#fff;outline:none}
+.sendBtn{width:44px;height:44px;min-width:44px;border-radius:50%;border:none;background:var(--me);color:#fff;cursor:pointer;display:grid;place-items:center}
+.attachBtn,.iconBtn{width:42px;height:42px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;display:grid;place-items:center}
+.typingWrap{align-self:flex-start;display:flex;flex-direction:column;gap:4px;max-width:82%}
+.typingBubble{display:flex;gap:5px;padding:12px 16px;background:var(--you);border:1px solid var(--border);border-radius:18px;width:fit-content}
+.dot{width:7px;height:7px;background:#7dd3fc;border-radius:50%;animation:typingDot 1.4s infinite}
+.dot:nth-child(2){animation-delay:0.2s} .dot:nth-child(3){animation-delay:0.4s}
+@keyframes typingDot{0%,60%,100%{transform:translateY(0);opacity:0.4}30%{transform:translateY(-6px);opacity:1}}
+#overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:99} #overlay.show{display:flex}
+.modal{background:#12131d;border:1px solid var(--border);border-radius:18px;padding:20px;width:92%;max-width:320px;text-align:center}
+.small{font-size:10px;opacity:0.6} .onlineDot{width:10px;height:10px;background:#22c55e;border-radius:50%;box-shadow:0 0 8px #22c55e} .offlineDot{width:10px;height:10px;background:#64748b;border-radius:50%}
+</style>
+</head>
+<body>
+<div class="card">
+  <div id="pageLogin"><div style="display:inline-flex;background:rgba(14,165,233,0.12);border:1px solid rgba(14,165,233,0.25);color:#7dd3fc;font-size:10px;padding:6px 12px;border-radius:20px;margin-bottom:12px">🔒 Chat Dengan Host • Privat</div><div style="width:72px;height:72px;margin:0 auto 14px;background:linear-gradient(180deg,rgba(14,165,233,0.2),rgba(99,102,241,0.2));border-radius:20px;display:grid;place-items:center;font-size:34px">🕵️</div><div style="font-weight:700;font-size:24px">CHAT <span style="background:linear-gradient(135deg,#0ea5e9,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent">RAHASIA</span></div><input id="inputNama" style="width:100%;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:14px;color:#fff;outline:none;margin:16px 0 10px" placeholder="Nama samaran..."><button style="width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;font-weight:700;cursor:pointer" onclick="masuk()">🔓 Masuk</button><div id="limitInfo" class="small" style="margin-top:12px"></div><div id="lastAccount" class="small" style="color:#7dd3fc"></div></div>
+  <div id="pageChat">
+    <div class="header"><div style="display:flex;gap:10px;align-items:center"><div id="avatar" style="width:38px;height:38px;border-radius:12px;background:var(--me);display:grid;place-items:center;font-weight:700">?</div><div><b style="font-size:13px">Chat Dengan Host</b><div style="font-size:10px;display:flex;gap:6px;align-items:center"><span id="hostDot" class="onlineDot"></span><span id="hostStatus">Host Online</span> • <span id="sisaGanti">3/3</span></div></div></div><div style="display:flex;gap:6px"><button class="iconBtn" onclick="openRename()">✏️</button><button class="iconBtn" onclick="logout()">↪️</button></div></div>
+    <div style="text-align:center;padding:6px;background:rgba(14,165,233,0.12);font-size:10px;color:#7dd3fc">🔒 Pesan terenkripsi • Hanya kamu & Host</div>
+    <div id="chat"></div>
+    <div class="footer"><button class="attachBtn" onclick="document.getElementById('fileIn').click()">📎</button><input id="pesan" placeholder="Tulis pesan rahasia..." oninput="onTyping()"><button class="sendBtn" onclick="kirim()">➤</button></div>
+  </div>
+</div>
+<div id="overlay"><div class="modal" id="modalBox"></div></div>
+<input type="file" id="fileIn" hidden accept="image/*" onchange="kirimGambar(this)">
+<script>
+const TOPIC="vortexsione_chat_2026_host_user"; const MAX=3;
+let akun=null, akunL=null, semua=[], es=null, act=null, typingTimeout=null, isTyping=false, presenceInterval=null, hostOnline=false, hostLastSeen=0;
+function norm(s){return (s||'').toLowerCase().trim()}
+function getLog(){return JSON.parse(localStorage.getItem('rename_log')||'[]')}
+function clean(){let l=getLog(),t=new Date().toDateString(); l=l.filter(x=>new Date(x.time).toDateString()===t); localStorage.setItem('rename_log',JSON.stringify(l)); return l}
+function sisa(){return MAX-clean().length}
+function lastAcc(){return localStorage.getItem('last_account_name')||null}
+function upd(){document.getElementById('limitInfo').innerText=`Sisa ganti: ${sisa()}/${MAX}`; let la=lastAcc(); if(la) document.getElementById('lastAccount').innerText=`Identitas: ${la}`; let sg=document.getElementById('sisaGanti'); if(sg) sg.innerText=`${sisa()}/${MAX} ganti`}
+function masuk(){let n=document.getElementById('inputNama').value.trim(); if(n.length<3){alert('Min 3 huruf');return;} let last=lastAcc(); if(!last){localStorage.setItem('rename_log','[]')} else if(norm(last)!==norm(n)){if(sisa()<=0){alert(`Limit habis! Pakai ${last}`); document.getElementById('inputNama').value=last; return;} let lg=getLog(); lg.push({time:Date.now(),from:last,to:n}); localStorage.setItem('rename_log',JSON.stringify(lg)); semua=JSON.parse(localStorage.getItem('pesan_'+TOPIC)||'[]'); semua=semua.filter(m=>norm(m.nama)!==norm(last) && norm(m.to)!==norm(last)); localStorage.setItem('pesan_'+TOPIC, JSON.stringify(semua)); publishSys(`${last} → ${n}`,last,n);} akun=n; akunL=norm(n); localStorage.setItem('akunAktif',n); localStorage.setItem('last_account_name',n); document.getElementById('pageLogin').style.display='none'; document.getElementById('pageChat').style.display='flex'; document.getElementById('avatar').innerText=n[0].toUpperCase(); semua=JSON.parse(localStorage.getItem('pesan_'+TOPIC)||'[]'); render(); connect(); startPresence(); upd();}
+function openRename(){if(sisa()<=0){alert('Limit habis');return;} let o=document.getElementById('overlay'),m=document.getElementById('modalBox'); m.innerHTML=`<h3>Ganti Identitas</h3><input id="newN" style="width:100%;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:14px;color:#fff;outline:none" placeholder="Nama baru"><button style="width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;font-weight:700;margin-top:8px;cursor:pointer" onclick="doRen()">Simpan</button><button style="width:100%;padding:14px;border:none;border-radius:14px;background:#222;color:#fff;margin-top:8px;cursor:pointer" onclick="closeO()">Batal</button>`; o.classList.add('show')}
+function doRen(){let b=document.getElementById('newN').value.trim(); if(b.length<3) return; if(sisa()<=0) return; let lama=akun; let lg=getLog(); lg.push({time:Date.now(),from:lama,to:b}); localStorage.setItem('rename_log',JSON.stringify(lg)); semua=semua.filter(m=>norm(m.nama)!==norm(lama) && norm(m.to)!==norm(lama)); akun=b; akunL=norm(b); localStorage.setItem('akunAktif',b); localStorage.setItem('last_account_name',b); publishSys(`${lama} → ${b}`,lama,b); localStorage.setItem('pesan_'+TOPIC,JSON.stringify(semua)); document.getElementById('avatar').innerText=b[0].toUpperCase(); closeO(); render(); upd();}
+function closeO(){document.getElementById('overlay').classList.remove('show')}
+function connect(){if(es) es.close(); es=new EventSource('https://ntfy.sh/'+TOPIC+'/sse'); es.onmessage=e=>{try{let o=JSON.parse(e.data); if(!o.message) return; let m=JSON.parse(o.message); if(m.type==='presence'&&norm(m.nama)==='host'){hostOnline=true; hostLastSeen=Date.now(); updateHostStatus(); return} if(m.type==='typing'){if(norm(m.from)!==akunL && norm(m.to)===akunL){showTypingBubble(m.from)} return} if(semua.find(x=>x.id===m.id)) return; if(m.type==='delete'){let t=semua.find(x=>x.id===m.targetId); if(t){if(!t.deletedBy) t.deletedBy=[]; t.deletedBy.push(m.deleter)}} else semua.push(m); localStorage.setItem('pesan_'+TOPIC,JSON.stringify(semua.slice(-600))); render();}catch{}};}
+function isRel(m){if(!akunL) return false; if(m.from==='system') return true; if(m.from==='pengirim'&&norm(m.nama)===akunL) return true; if(m.from==='penerima'){let to=norm(m.to); if(to===akunL||to==='all'||!m.to) return true} return false}
+function render(){let b=document.getElementById('chat'); b.innerHTML=''; let f=semua.filter(x=>{if(x.deletedBy&&(x.deletedBy.includes(akun)||x.deletedBy.map(norm).includes(akunL))) return false; return isRel(x)}).sort((a,b)=>a.timestamp-b.timestamp); f.forEach((i)=>{if(i.from==='system') b.innerHTML+=`<div style="display:flex;justify-content:center"><div style="background:rgba(14,165,233,0.15);border:1px solid rgba(14,165,233,0.25);color:#7dd3fc;font-size:11px;padding:6px 12px;border-radius:20px">🔄 ${i.pesan}</div></div>`; else{let me=i.from==='pengirim'; let img=i.image?`<img src="${i.image}" style="max-width:100%;border-radius:12px;margin-top:6px;display:block">`:''; b.innerHTML+=`<div style="display:flex;${me?'justify-content:flex-end':'justify-content:flex-start'}"><div class="bubble ${me?'me':'you'}" onclick="openDel('${i.id}')">${i.pesan||''}${img}<div style="font-size:9px;opacity:0.6;text-align:right;margin-top:4px">${i.jam||''} ${me?'✓✓':''}</div></div></div>`}}); if(f.length===0) b.innerHTML=`<div style="text-align:center;padding:30px 20px;opacity:0.7"><div style="font-size:40px">🔒</div><b>Chat Rahasia Dimulai</b><div style="font-size:11px;opacity:0.6;margin-top:6px">Sapa Host</div></div>`; b.scrollTop=b.scrollHeight}
+function pub(m){m.id=Date.now()+'_'+Math.random().toString(36).substr(2,5); m.timestamp=Date.now(); fetch('https://ntfy.sh/'+TOPIC,{method:'POST',body:JSON.stringify(m)}); semua.push(m); localStorage.setItem('pesan_'+TOPIC,JSON.stringify(semua.slice(-600))); render();}
+function publishSys(t,o,n2){pub({nama:'system',from:'system',pesan:t,oldNama:o,newNama:n2,jam:new Date().toLocaleTimeString('id-ID'),deletedBy:[]})}
+function kirim(){let p=document.getElementById('pesan').value.trim(); if(!p) return; stopTyping(); pub({nama:akun,pesan:p,jam:new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),from:'pengirim',to:'host',deletedBy:[]}); document.getElementById('pesan').value='';}
+function kirimGambar(inp){let f=inp.files[0]; if(!f) return; let r=new FileReader(); r.onload=()=>pub({nama:akun,pesan:'📷 Gambar rahasia',image:r.result,jam:new Date().toLocaleTimeString('id-ID'),from:'pengirim',to:'host',deletedBy:[]}); r.readAsDataURL(f)}
+function openDel(id){act=id; let o=document.getElementById('overlay'),m=document.getElementById('modalBox'); m.innerHTML=`<h3>Hapus Jejak?</h3><button style="width:100%;padding:12px;border:none;border-radius:10px;background:#ef4444;color:#fff;font-weight:700;cursor:pointer;margin-top:10px" onclick="confDel()">🗑️ Hapus Untuk Saya</button><button style="width:100%;padding:12px;border:none;border-radius:10px;background:#222;color:#fff;cursor:pointer;margin-top:8px" onclick="closeO()">Batal</button>`; o.classList.add('show')}
+function confDel(){let i=semua.findIndex(m=>m.id===act); if(i>-1){if(!semua[i].deletedBy) semua[i].deletedBy=[]; semua[i].deletedBy.push(akun,akunL);} localStorage.setItem('pesan_'+TOPIC,JSON.stringify(semua)); closeO(); render()}
+function logout(){if(presenceInterval) clearInterval(presenceInterval); if(es) es.close(); fetch('https://ntfy.sh/'+TOPIC,{method:'POST',body:JSON.stringify({id:'pres_'+Date.now(),type:'presence',nama:akun,status:'offline',timestamp:Date.now()})}); localStorage.removeItem('akunAktif'); location.reload()}
+function onTyping(){if(!akun) return; if(!isTyping){fetch('https://ntfy.sh/'+TOPIC,{method:'POST',body:JSON.stringify({id:'typing_'+Date.now(),type:'typing',from:akun,to:'host',timestamp:Date.now()})}); isTyping=true} clearTimeout(typingTimeout); typingTimeout=setTimeout(()=>{isTyping=false},1500)}
+function stopTyping(){isTyping=false; clearTimeout(typingTimeout)}
+function showTypingBubble(from){let b=document.getElementById('chat'); let existing=document.getElementById('typingBubbleUser'); if(existing) existing.remove(); let wrap=document.createElement('div'); wrap.id='typingBubbleUser'; wrap.className='typingWrap'; wrap.innerHTML=`<div style="font-size:10px;opacity:0.5;margin-left:4px">Host sedang mengetik...</div><div class="typingBubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`; b.appendChild(wrap); b.scrollTop=b.scrollHeight; document.getElementById('hostStatus').innerText='sedang mengetik •••'; setTimeout(()=>{let el=document.getElementById('typingBubbleUser'); if(el) el.remove(); updateHostStatus()},2500)}
+function startPresence(){publishPresence(); presenceInterval=setInterval(()=>{publishPresence(); checkHostOnline()},15000); setInterval(checkHostOnline,5000)}
+function publishPresence(){if(!akun) return; fetch('https://ntfy.sh/'+TOPIC,{method:'POST',body:JSON.stringify({id:'pres_'+Date.now()+'_'+Math.random().toString(36).substr(2,3),type:'presence',nama:akun,status:'online',timestamp:Date.now()})})}
+function updateHostStatus(){let now=Date.now(); let diff=Math.floor((now-hostLastSeen)/1000); let hs=document.getElementById('hostStatus'), dot=document.getElementById('hostDot'); if(!hs||!dot) return; if(hostOnline && diff<35){hs.innerText='Host Online'; dot.className='onlineDot'} else if(hostLastSeen>0){hs.innerText=`Offline • ${diff<60?diff+'d lalu':Math.floor(diff/60)+'m lalu'}`; dot.className='offlineDot'} else {hs.innerText='Host Offline'; dot.className='offlineDot'}}
+function checkHostOnline(){let now=Date.now(); if(now-hostLastSeen>35000){hostOnline=false; updateHostStatus()}}
+document.getElementById('pesan').addEventListener('keydown',e=>{if(e.key==='Enter') kirim()}); window.onload=()=>{upd(); let s=localStorage.getItem('akunAktif'); if(s) document.getElementById('inputNama').value=s}
+</script>
+</body>
+</html>
